@@ -2,6 +2,7 @@ from glove_demo.streaming import AudioStream, Replica
 from psychtoolbox import PsychPortAudio
 import numpy as np
 import soundfile as sf
+import sys
 import tkinter as tk
 from pathlib import Path
 
@@ -13,8 +14,8 @@ class QuickSinUI:
         self.root.geometry("500x500")
 
         self._all_devices = PsychPortAudio('GetDevices')
-
-        self.quicksin_dir = Path(__file__).resolve().parents[2] / "quicksin_data"
+        
+        self.quicksin_dir = self._get_data_path()
         apis  = sorted({d['HostAudioAPIName'] for d in self._all_devices})
         chs   = sorted({d['NrOutputChannels'] for d in self._all_devices})
         lists = sorted(f.name for f in self.quicksin_dir.iterdir() if f.is_file())
@@ -56,6 +57,11 @@ class QuickSinUI:
         self.routing_frame.pack(fill="x", padx=8, pady=(8, 0))
 
         self._build_routing_ui()
+
+    def _get_data_path(self):
+        if getattr(sys, "frozen", False):
+            return Path(sys._MEIPASS) / "quicksin_data"
+        return Path(__file__).resolve().parents[2] / "quicksin_data"
 
     def _on_filter_change(self, *_):
         self._refresh_devices()
