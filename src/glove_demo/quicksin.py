@@ -242,12 +242,13 @@ def mix(speech: np.ndarray, noise: np.ndarray, snr_db: float) -> np.ndarray:
 
     return mix
 
-
-   
-if __name__ == '__main__':
+def main():
     root = tk.Tk()
     ui = QuickSinUI(root)
 
     api, ch, dev_name, dev_id = ui.get_selected()
 
     root.mainloop()
+   
+if __name__ == '__main__':
+    main()
