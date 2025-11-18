@@ -15,7 +15,7 @@ https://docs.astral.sh/uv/getting-started/installation/
 #### 2. Clone the repository
 
 ```bash
-git https://github.com/LoonanChauvette/glove_demo.git
+git clone https://github.com/LoonanChauvette/glove_demo.git
 cd glove_demo
 ```
 
