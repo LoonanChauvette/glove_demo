@@ -24,5 +24,5 @@ cd glove_demo
 ```bash
 # Run directly using uv
 uv sync
-uv run glove_demo
+uv run glove-demo
 ```
