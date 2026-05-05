@@ -187,9 +187,15 @@ class QuickSinUI:
         snr_scale.grid(row=2, column=1, sticky="ew", pady=2)
 
         tk.Label(noise_frame, text="Gain:").grid(row=3, column=0, sticky="w", pady=2)
-        tk.Entry(noise_frame, textvariable=self.var_gain, width=10).grid(
-            row=3, column=1, sticky="w", pady=2
+        gain_scale = tk.Scale(
+            noise_frame,
+            from_=0.0,
+            to=2.0,
+            resolution=0.01,
+            orient="horizontal",
+            variable=self.var_gain,
         )
+        gain_scale.grid(row=3, column=1, sticky="ew", pady=2)
 
         noise_frame.columnconfigure(1, weight=1)
 
@@ -230,17 +236,17 @@ class QuickSinUI:
 
     def _get_data_path(self):
         if getattr(sys, "frozen", False):
-            return Path(sys._MEIPASS) / "quicksin_data"
+            return Path(sys._MEIPASS) / "quicksin_data"  # type: ignore
         return Path(__file__).resolve().parents[2] / "quicksin_data"
 
     def _get_mri_path(self):
         if getattr(sys, "frozen", False):
-            return Path(sys._MEIPASS) / "MRI_data"
+            return Path(sys._MEIPASS) / "MRI_data"  # type: ignore
         return Path(__file__).resolve().parents[2] / "MRI_data"
 
     def _get_songs_path(self):
         if getattr(sys, "frozen", False):
-            return Path(sys._MEIPASS) / "songs"
+            return Path(sys._MEIPASS) / "songs"  # type: ignore
         return Path(__file__).resolve().parents[2] / "songs"
 
     def _scan_mri_files(self):
@@ -254,14 +260,20 @@ class QuickSinUI:
         )
 
     def _scan_songs(self):
-        """Scan songs folder for audio files"""
+        """Scan songs folder for audio files, preferring WAV files"""
         if not self.songs_dir.exists():
             return []
-        return sorted(
-            f.name
-            for f in self.songs_dir.iterdir()
-            if f.is_file() and f.suffix.lower() in [".m4a", ".mp3", ".wav"]
-        )
+
+        # Collect all audio files
+        all_files = {}
+        for f in self.songs_dir.iterdir():
+            if f.is_file() and f.suffix.lower() in [".m4a", ".mp3", ".wav"]:
+                stem = f.stem  # filename without extension
+                # Prefer WAV files if both WAV and M4A/MP3 exist
+                if stem not in all_files or f.suffix.lower() == ".wav":
+                    all_files[stem] = f.name
+
+        return sorted(all_files.values())
 
     def _on_filter_change(self, *_):
         self._refresh_devices()
